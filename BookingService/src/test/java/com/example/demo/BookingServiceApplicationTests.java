@@ -6,7 +6,8 @@ import static org.mockito.Mockito.*;
 import com.example.demo.exceptions.BookingNotFoundException;
 import com.example.demo.model.Booking;
 import com.example.demo.repository.BookingRepository;
-import com.example.demo.service.BookingService;
+import com.example.demo.service.IBookingService;
+import com.example.demo.service.BookingServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,7 +28,7 @@ class BookingServiceApplicationTests {
     private BookingRepository bookingRepository; // Mock Repository
 
     @InjectMocks
-    private BookingService bookingService; // Inject BookingService
+    private BookingServiceImpl bookingService; // Inject Implementation of IBookingService
 
     @Test
     void testCreateBooking() {
