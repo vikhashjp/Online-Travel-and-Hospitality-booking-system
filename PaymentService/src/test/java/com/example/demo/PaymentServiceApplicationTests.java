@@ -1,7 +1,6 @@
 package com.example.demo;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
@@ -10,7 +9,8 @@ import java.util.List;
 import com.example.demo.dto.PaymentDTO;
 import com.example.demo.model.Payment;
 import com.example.demo.repository.PaymentRepository;
-import com.example.demo.service.PaymentService;
+import com.example.demo.service.PaymentServiceImpl;
+import com.example.demo.service.InvoiceService;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -23,8 +23,11 @@ class PaymentServiceApplicationTests {
     @Mock
     private PaymentRepository paymentRepository;
 
+    @Mock
+    private InvoiceService invoiceService; // Added Invoice Service Mock
+
     @InjectMocks
-    private PaymentService paymentService;
+    private PaymentServiceImpl paymentService; // Changed to Impl for correctness
 
     @Test
     void testProcessPayment() {
@@ -36,7 +39,7 @@ class PaymentServiceApplicationTests {
         paymentDTO.setPaymentMethod("Credit Card");
 
         Payment paymentEntity = new Payment();
-        paymentEntity.setId(1L);
+        paymentEntity.setPaymentId(1L);
         paymentEntity.setUserId(paymentDTO.getUserId());
         paymentEntity.setBookingId(paymentDTO.getBookingId());
         paymentEntity.setAmount(paymentDTO.getAmount());
@@ -48,12 +51,15 @@ class PaymentServiceApplicationTests {
         paymentService.processPayment(paymentDTO);
 
         verify(paymentRepository, times(1)).save(any(Payment.class));
+
+        // Verify Invoice generation for successful payments
+        verify(invoiceService, times(1)).generateInvoice(paymentDTO.getBookingId(), paymentDTO.getUserId(), paymentDTO.getAmount());
     }
 
     @Test
     void testGetAllPayments() {
         Payment payment1 = new Payment();
-        payment1.setId(1L);
+        payment1.setPaymentId(1L);
         payment1.setUserId(101L);
         payment1.setBookingId(202L);
         payment1.setAmount(500.0);
@@ -61,7 +67,7 @@ class PaymentServiceApplicationTests {
         payment1.setPaymentMethod("Credit Card");
 
         Payment payment2 = new Payment();
-        payment2.setId(2L);
+        payment2.setPaymentId(2L);
         payment2.setUserId(102L);
         payment2.setBookingId(205L);
         payment2.setAmount(800.0);
